@@ -1,0 +1,26 @@
+<?xml version="1.0"?>
+<configuration>
+    <property>
+        <name>yarn.nodemanager.aux-services</name>
+        <value>mapreduce_shuffle</value>
+    </property>
+    <property>
+        <name>yarn.nodemanager.env-whitelist</name>
+        <value>JAVA_HOME,HADOOP_COMMON_HOME,HADOOP_HDFS_HOME,HADOOP_CONF_DIR,CLASSPATH_PREPEND_DISTCACHE,HADOOP_YARN_HOME,HADOOP_MAPRED_HOME</value>
+    </property>
+    <property>
+      <name>yarn.resourcemanager.hostname</name>
+      <value>master-node</value>
+    </property>
+    <!-- These two properties prevent some memory issues -->
+    <property>
+      <name>yarn.nodemanager.vmem-check-enabled</name>
+      <value>false</value>
+      <description>Whether virtual memory limits will be enforced for containers</description>
+    </property>
+    <property>
+      <name>yarn.nodemanager.vmem-pmem-ratio</name>
+      <value>4</value>
+      <description>Ratio between virtual memory to physical memory when setting memory limits for containers</description>
+    </property>
+</configuration>
