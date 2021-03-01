@@ -2,7 +2,7 @@ version: "3.6"
 services:
   # Master
   master-node:
-    image: "jware/bigdata-cluster"
+    image: "jwaresolutions/bigdata-cluster"
     restart: "always"
     # command: bash -c "echo 'n' | /usr/local/hadoop/bin/hdfs namenode -format &&
     command: bash -c "/home/big_data/spark-cmd.sh start master-node"
@@ -20,7 +20,7 @@ services:
 
   # Workers
   worker:
-    image: "jware/bigdata-cluster"
+    image: "jwaresolutions/bigdata-cluster"
     restart: "always"
     command: bash -c "/home/big_data/spark-cmd.sh start"
     depends_on:

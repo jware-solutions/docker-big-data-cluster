@@ -1,6 +1,6 @@
 #!/bin/bash
 
-imageName="jware/bigdata-cluster"
+imageName="jwaresolutions/bigdata-cluster"
 
 # Bring the services up
 function startServices {
