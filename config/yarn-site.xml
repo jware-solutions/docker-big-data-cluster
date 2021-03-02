@@ -12,6 +12,13 @@
       <name>yarn.resourcemanager.hostname</name>
       <value>master-node</value>
     </property>
+    <!-- Port 8088 uses tcp6 protocol which does not work correctly with published ports using host mode in 
+    docker-compose file (source: https://stackoverflow.com/q/23128593/7058363).
+    Note that this setting is used only in master node -->
+    <property>
+      <name>yarn.resourcemanager.webapp.address</name>
+      <value>0.0.0.0:8088</value>
+    </property>
     <!-- These two properties prevent some memory issues -->
     <property>
       <name>yarn.nodemanager.vmem-check-enabled</name>
