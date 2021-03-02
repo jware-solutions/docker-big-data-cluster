@@ -2,49 +2,36 @@ version: "3.6"
 services:
   # Master
   master-node:
-    image: "jwaresolutions/bigdata-cluster"
+    image: "jwaresolutions/big-data-cluster"
     restart: "always"
-    # command: bash -c "echo 'n' | /usr/local/hadoop/bin/hdfs namenode -format &&
     command: bash -c "/home/big_data/spark-cmd.sh start master-node"
     networks:
-      - spark-net
+      - cluster-net
     volumes:
       # - "./data:/home/big_data/data" # Your data
       - hdfs-master-data:/home/hadoop/data/nameNode
       - hdfs-master-checkpoint-data:/home/hadoop/data/namesecondary
-    deploy:
-      placement:
-        # set node labels using docker node update --label-add key=value <NODE ID> from swarm manager
-        constraints:
-          - node.labels.role==master
 
   # Workers
   worker:
-    image: "jwaresolutions/bigdata-cluster"
+    image: "jwaresolutions/big-data-cluster"
     restart: "always"
     command: bash -c "/home/big_data/spark-cmd.sh start"
     depends_on:
       - "master-node"
     volumes:
       - hdfs-worker-data:/home/hadoop/data/dataNode
-    deploy:
-      placement:
-        # set node labels using `docker node update --label-add key=value <NODE ID>` from swarm manager
-        constraints:
-          - node.labels.role==worker
-      # Deploy 3 containers for this service
-      replicas: 3
     networks:
-      - spark-net
+      - cluster-net
 
 volumes:
   hdfs-master-data:
   hdfs-master-checkpoint-data:
   hdfs-worker-data:
 
-# Create the spark-net network
+# Create the cluster-net network
 networks:
-  spark-net:
+  cluster-net:
     name: "cluster_net" # Useful for format as it does not allow '-' char on command
     driver: bridge
     attachable: false # Attachable: true prevents user to connect to Hadoop panels

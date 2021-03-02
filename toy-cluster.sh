@@ -1,6 +1,6 @@
 #!/bin/bash
 
-imageName="jwaresolutions/bigdata-cluster"
+imageName="jwaresolutions/big-data-cluster"
 
 # Bring the services up
 function startServices {
@@ -35,6 +35,11 @@ if [[ $1 = "stop" ]]; then
   exit
 fi
 
+if [[ $1 = "remove" ]]; then
+  docker rm master-node worker-1 worker-2 worker-3
+  exit
+fi
+
 if [[ $1 = "deploy" ]]; then
   docker container rm -f `docker ps -a | grep $imageName | awk '{ print $1 }'` # delete old containers
   docker network rm cluster_net
@@ -62,5 +67,6 @@ fi
 echo "Usage: cluster.sh deploy|start|stop"
 echo "    deploy - create a new Docker network, containers (a master and 3 workers) and start these last"
 echo "    start  - start the existing containers"
-echo "    stop   - stop the running containers" 
-echo "    info   - useful URLs" 
+echo "    stop   - stop the running containers"
+echo "    remove - remove all the created containers"
+echo "    info   - useful URLs"

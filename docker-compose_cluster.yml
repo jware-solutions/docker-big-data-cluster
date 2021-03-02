@@ -1,0 +1,67 @@
+version: "3.6"
+services:
+  # Master
+  master-node:
+    image: "jwaresolutions/big-data-cluster"
+    command: bash -c "/home/big_data/spark-cmd.sh start master-node"
+    ports:
+      - target: 8088
+        published: 8088
+        protocol: tcp
+        mode: host
+      - target: 8080
+        published: 8080
+        protocol: tcp
+        mode: host
+      - target: 9870
+        published: 9870
+        protocol: tcp
+        mode: host
+    networks:
+      - cluster-net
+    volumes:
+      # - "./data:/home/big_data/data" # Your data
+      - hdfs-master-data:/home/hadoop/data/nameNode
+      - hdfs-master-checkpoint-data:/home/hadoop/data/namesecondary
+    deploy:
+      mode: global # Required by Docker Swarm to make published ports work with other services
+      endpoint_mode: dnsrr # Required to prevent 
+      placement:
+        # Set node labels using `docker node update --label-add role=master <NODE ID>` from swarm manager
+        constraints:
+          - node.labels.role==master
+
+  # Workers
+  worker:
+    image: "jwaresolutions/big-data-cluster"
+    command: bash -c "/home/big_data/spark-cmd.sh start"
+    depends_on:
+      - "master-node"
+    volumes:
+      - hdfs-worker-data:/home/hadoop/data/dataNode
+    deploy:
+      placement:
+        # Set node labels using `docker node update --label-add role=worker <NODE ID>` from swarm manager
+        constraints:
+          - node.labels.role==worker
+      # Deploy N containers for this service
+      replicas: 3
+    networks:
+      - cluster-net
+
+volumes:
+  hdfs-master-data:
+    external:
+      name: 'hdsf_master_data_swarm'
+  hdfs-master-checkpoint-data:
+    external:
+      name: 'hdsf_master_checkpoint_data_swarm'
+  hdfs-worker-data:
+    external:
+      name: 'hdsf_worker_data_swarm'
+
+# Uses cluster-net network
+networks:
+  cluster-net:
+    external: true
+    name: cluster_net_swarm
