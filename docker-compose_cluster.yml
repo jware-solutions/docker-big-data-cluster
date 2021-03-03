@@ -25,7 +25,7 @@ services:
       - hdfs-master-checkpoint-data:/home/hadoop/data/namesecondary
     deploy:
       mode: global # Required by Docker Swarm to make published ports work with other services
-      endpoint_mode: dnsrr # Required to prevent 
+      endpoint_mode: dnsrr # Required to prevent java.net.ConnectException
       placement:
         # Set node labels using `docker node update --label-add role=master <NODE ID>` from swarm manager
         constraints:
