@@ -3,6 +3,7 @@ services:
   # Master
   master-node:
     image: "jwaresolutions/big-data-cluster"
+    container_name: "master-node"
     restart: "always"
     command: bash -c "/home/big_data/spark-cmd.sh start master-node"
     networks:
