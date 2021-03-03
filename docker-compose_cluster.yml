@@ -51,14 +51,14 @@ services:
 
 volumes:
   hdfs-master-data:
-    external:
-      name: 'hdsf_master_data_swarm'
+    external: true
+    name: 'hdsf_master_data_swarm'
   hdfs-master-checkpoint-data:
-    external:
-      name: 'hdsf_master_checkpoint_data_swarm'
+    external: true
+    name: 'hdsf_master_checkpoint_data_swarm'
   hdfs-worker-data:
-    external:
-      name: 'hdsf_worker_data_swarm'
+    external: true
+    name: 'hdsf_worker_data_swarm'
 
 # Uses cluster-net network
 networks:
