@@ -6,16 +6,16 @@ A ready to go Big Data cluster (Hadoop + Hadoop Streaming + Spark + PySpark) wit
 
 ## Index
 
-1. [Why?](##why?)
-1. [Features](##features)
-1. [Running toy cluster](##running-toy-cluster)
-1. [Running a real cluster in Docker Swarm](##running-a-real-cluster-in-docker-swarm)
-1. [Usage](##usage)
-	1. [HDFS](###hdfs)
-	1. [Spark and PySpark](###spark-and-pyspark)
-1. [Going further](##going-further)
-1. [Frequent problems](##frequent-problems)
-1. [Contributing](##contributing)
+1. [Why?](#why)
+1. [Features](#features)
+1. [Running toy cluster](#running-toy-cluster)
+1. [Running a real cluster in Docker Swarm](#running-a-real-cluster-in-docker-swarm)
+1. [Usage](#usage)
+	1. [HDFS](#hdfs)
+	1. [Spark and PySpark](#spark-and-pyspark)
+1. [Going further](#going-further)
+1. [Frequent problems](#frequent-problems)
+1. [Contributing](#contributing)
 
 
 ## Why?
