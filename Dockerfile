@@ -18,25 +18,31 @@ RUN apt update \
     && ssh-keygen -q -t rsa -N '' -f ~/.ssh/id_rsa \
     && cat ~/.ssh/id_rsa.pub > ~/.ssh/authorized_keys \
     && echo 'PermitRootLogin yes' >> /etc/ssh/sshd_config \
-    && service ssh restart \
-    # Downloads and extracts Hadoop
-    && wget http://apache.dattatec.com/hadoop/common/hadoop-3.1.3/hadoop-3.1.3.tar.gz \
+    && service ssh restart
+
+# Downloads and extracts Hadoop
+RUN wget http://apache.dattatec.com/hadoop/common/hadoop-3.2.2/hadoop-3.2.2.tar.gz
+
     # Configures Hadoop and removes downloaded .tar.gz file
-    && tar -xzvf hadoop-3.1.3.tar.gz \
-    && mv hadoop-3.1.3 $HADOOP_HOME \
+RUN tar -xzvf hadoop-3.2.2.tar.gz \
+    && mv hadoop-3.2.2 $HADOOP_HOME \
     && echo 'export JAVA_HOME=$(readlink -f /usr/bin/java | sed "s:bin/java::")' >> $HADOOP_HOME/etc/hadoop/hadoop-env.sh \
     && echo 'export PATH=$PATH:$HADOOP_HOME/bin' >> ~/.bashrc \
     && echo 'export PATH=$PATH:$HADOOP_HOME/sbin' >> ~/.bashrc \
-    && rm hadoop-3.1.3.tar.gz
-    # Downloads Apache Spark
-RUN wget apache.dattatec.com/spark/spark-3.0.0/spark-3.0.0-bin-hadoop2.7.tgz \
-    # Decompress, adds to PATH and then removes .tgz Apache Spark file
-    && tar -xvzf spark-3.0.0-bin-hadoop2.7.tgz \
-    && mv spark-3.0.0-bin-hadoop2.7 sbin/ \
-    && echo 'export PATH=$PATH:/sbin/spark-3.0.0-bin-hadoop2.7/sbin/' >> ~/.bashrc \
-    && echo 'export PATH=$PATH:/sbin/spark-3.0.0-bin-hadoop2.7/bin/' >> ~/.bashrc \
-    && rm spark-3.0.0-bin-hadoop2.7.tgz
-RUN mv ${HADOOP_STREAMING_HOME}/hadoop-streaming-3.1.3.jar ${HADOOP_STREAMING_HOME}/hadoop-streaming.jar \
+    && rm hadoop-3.2.2.tar.gz
+
+# Downloads Apache Spark
+RUN wget http://apache.dattatec.com/spark/spark-3.1.1/spark-3.1.1-bin-without-hadoop.tgz
+
+# Decompress, adds to PATH and then removes .tgz Apache Spark file
+# NOTE: Spark bin folder goes first to prevent issues with /usr/local/bin duplicated binaries
+RUN tar -xvzf spark-3.1.1-bin-without-hadoop.tgz \
+    && mv spark-3.1.1-bin-without-hadoop sbin/ \
+    && echo 'export PATH=$PATH:/sbin/spark-3.1.1-bin-without-hadoop/sbin/' >> ~/.bashrc \
+    && echo 'export PATH=/sbin/spark-3.1.1-bin-without-hadoop/bin/:$PATH' >> ~/.bashrc \
+    && rm spark-3.1.1-bin-without-hadoop.tgz
+
+RUN mv ${HADOOP_STREAMING_HOME}/hadoop-streaming-3.2.2.jar ${HADOOP_STREAMING_HOME}/hadoop-streaming.jar \
     && source ~/.bashrc
 
 # Installs some extra libraries
@@ -66,7 +72,7 @@ COPY ./config/mapred-site.xml .
 COPY ./config/yarn-site.xml .
 
 # Spark settings
-WORKDIR /sbin/spark-3.0.0-bin-hadoop2.7/conf/
+WORKDIR /sbin/spark-3.1.1-bin-without-hadoop/conf/
 COPY ./config/spark-env.sh .
 COPY ./config/log4j.properties .
 
