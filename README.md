@@ -4,6 +4,20 @@
 A ready to go Big Data cluster (Hadoop + Hadoop Streaming + Spark + PySpark) with Docker and Docker Swarm!
 
 
+## Index
+
+1. [Why?](##why?)
+1. [Features](##features)
+1. [Running toy cluster](##running-toy-cluster)
+1. [Running a real cluster in Docker Swarm](##running-a-real-cluster-in-docker-swarm)
+1. [Usage](##usage)
+	1. [HDFS](###hdfs)
+	1. [Spark and PySpark](###spark-and-pyspark)
+1. [Going further](##going-further)
+1. [Frequent problems](##frequent-problems)
+1. [Contributing](##contributing)
+
+
 ## Why?
 
 Although today you can find several repositories ready to deploy a Spark or Hadoop cluster, they all run into the same problem: they do not work when deployed on Docker Swarm due to several issues ranging from the definition of the worker nodes to connection problems with Docker network interfaces.
@@ -175,6 +189,7 @@ In both `docker-compose.yml` (toy cluster) and `docker-compose_cluster.yml` (rea
 1. Add the dependency to the `requirements.txt` file.
 1. Build the image again.
 
+
 ## Frequent problems
 
 
@@ -203,10 +218,6 @@ There are some TODOs to complete:
 - [ ] Add examples for Hadoop Streaming
 - [ ] Add examples for Spark Streaming
 
-
-<!-- 
-	TODO: agregar explicacion de error de los puertos agregando referencias a https://docs.docker.com/engine/swarm/ingress/#bypass-the-routing-mesh
--->
 
 [rubenafo-repo]: https://github.com/rubenafo/docker-spark-cluster
 [sdesilva26-repo]: https://github.com/sdesilva26/docker-spark
