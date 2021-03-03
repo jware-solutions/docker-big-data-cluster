@@ -41,7 +41,7 @@ This repository is inspired by and uses several scripts taken from [Rubenafo's r
 You have two ways to run a cluster on a single machine:
 
 - Use `toy-cluster.sh` script...
-- Or `docker-compose.yml` file
+- Or use `docker-compose.yml` file
 
 
 ### Using toy-cluster.sh script
