@@ -6,6 +6,10 @@ services:
     container_name: "master-node"
     restart: "always"
     command: bash -c "/home/big_data/spark-cmd.sh start master-node"
+    ports:
+      - 8088:8088
+      - 8080:8080
+      - 9870:9870
     networks:
       - cluster-net
     volumes:
