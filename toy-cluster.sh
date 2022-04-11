@@ -18,7 +18,7 @@ function show_info {
   masterIp=`docker inspect -f "{{ .NetworkSettings.Networks.cluster_net.IPAddress }}" master-node`
   echo "Hadoop info @ master-node: http://$masterIp:8088/cluster"
   echo "Spark info @ master-node:  http://$masterIp:8080/"
-  echo "Spark application logs @ master-node:  http://$masterIp:18080/"
+  echo "Spark applications logs @ master-node:  http://$masterIp:18080/"
   echo "DFS Health @ master-node:  http://$masterIp:9870/dfshealth.html"
 }
 

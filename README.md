@@ -65,7 +65,7 @@ The `docker-compose.yml` file has the same structure than `toy-cluster.sh` scrip
 
 Only for the first time, you need to format the namenode information directory. **Do not execute this command when you are in production with valid data stored as you will lose all your data stored in the HDFS**:
 
-`docker container run -v hdfs_master_data_swarm:/home/hadoop/data/nameNode jwaresolutions/big-data-cluster:<tag> /usr/local/hadoop/bin/hadoop namenode -format`
+`docker container run --rm -v hdfs_master_data_swarm:/home/hadoop/data/nameNode jwaresolutions/big-data-cluster:<tag> /usr/local/hadoop/bin/hadoop namenode -format`
 
 Then you can manage your toy cluster with the following commands:
 
@@ -100,9 +100,9 @@ docker volume create --name=hdfs_worker_data_swarm
 
 Now it is time to select a tag of the Docker image. The default is latest but it is not recommended to use it in production. After choose one, set it version on `docker-compose_cluster.yml` and the command below.
 
-Only for the first time, you need to format the namenode information directory. **Do not execute this command when you are in production with valid data stored as you will lose all your data stored in the HDFS**:
+Only for the first time, you need to format the namenode information directory **in Master and Workers nodes. Do not execute this command when you are in production with valid data stored as you will lose all your data stored in the HDFS**:
 
-`docker container run -v hdfs_master_data_swarm:/home/hadoop/data/nameNode jwaresolutions/big-data-cluster:<tag> /usr/local/hadoop/bin/hadoop namenode -format`
+`docker container run --rm -v hdfs_master_data_swarm:/home/hadoop/data/nameNode jwaresolutions/big-data-cluster:<tag> /usr/local/hadoop/bin/hadoop namenode -format`
 
 Now you are ready to deploy your production cluster!
 
@@ -116,6 +116,7 @@ Finally you can use your cluster! Like the toy cluster, you have available some 
 
 - \<MASTER IP>:8088 -> Hadoop panel
 - \<MASTER IP>:8080 -> Spark panel
+- \<MASTER IP>:18080 -> Spark applications logs
 - \<MASTER IP>:9870 -> HDFS panel
 
  Enter the master node:
