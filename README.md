@@ -202,12 +202,17 @@ In both `docker-compose.yml` (toy cluster) and `docker-compose_cluster.yml` (rea
 
 ### Connection refused error
 
-Sometimes it throws a *Connection refused* error when run a HDFS command or try to access to DFS from Hadoop/Spark. There is [official documentation][connection-refused-docs] about this problem. The solution that works for this repository was running the commands listed in [this Stack Overflow answer][connection-refused-answer]. That is why you need to format the namenode directory the first time you are deploying the real cluster (see [Running a real cluster in Docker Swarm](##running-a-real-cluster-in-docker-swarm))
+Sometimes it throws a *Connection refused* error when run a HDFS command or try to access to DFS from Hadoop/Spark. There is [official documentation][connection-refused-docs] about this problem. The solution that worked for this repository was running the commands listed in [this Stack Overflow answer][connection-refused-answer]. That is why you need to format the namenode directory the first time you are deploying the real cluster (see [Running a real cluster in Docker Swarm](##running-a-real-cluster-in-docker-swarm)).
 
 
 ### Port 9870 is not working
 
 This problem means that Namenode is now running in master node, is associated with [Connection refused for HDFS](###connection-refused-for-hdfs) problem and has the same solution. Once Namenode is running the port should be working correctly.
+
+
+### HDFS panel does not show some living nodes
+
+If there are nodes that are not listed as active in the HDFS panel you may also need to run the nanemode directory formatting command on the Workers nodes, not just the Driver. See [Running a real cluster in Docker Swarm](##running-a-real-cluster-in-docker-swarm) to get the command.
 
 
 ## Contributing
