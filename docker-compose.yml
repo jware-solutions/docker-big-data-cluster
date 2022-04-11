@@ -2,7 +2,7 @@ version: "3.6"
 services:
   # Master
   master-node:
-    image: "jwaresolutions/big-data-cluster"
+    image: "jwaresolutions/big-data-cluster:0.4"
     container_name: "master-node"
     restart: "always"
     command: bash -c "/home/big_data/spark-cmd.sh start master-node"
@@ -10,6 +10,7 @@ services:
       - 8088:8088
       - 8080:8080
       - 9870:9870
+      - 18080:18080
     networks:
       - cluster-net
     volumes:
@@ -19,9 +20,10 @@ services:
 
   # Workers
   worker:
-    image: "jwaresolutions/big-data-cluster"
+    image: "jwaresolutions/big-data-cluster:0.4"
     restart: "always"
     command: bash -c "/home/big_data/spark-cmd.sh start"
+    deploy:
     depends_on:
       - "master-node"
     volumes:

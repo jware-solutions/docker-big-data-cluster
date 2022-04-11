@@ -7,3 +7,4 @@ typing-extensions==3.7.4.2
 pyspark~=3.0.0
 pyspark-stubs~=3.0.0
 pyarrow~=1.0.1
+scikit-survival==0.16.0

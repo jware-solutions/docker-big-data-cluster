@@ -1,12 +1,12 @@
 #!/bin/bash
 
-imageName="jwaresolutions/big-data-cluster"
+imageName="jwaresolutions/big-data-cluster:0.4"
 
 # Bring the services up
 function startServices {
   docker start master-node worker-1 worker-2 worker-3
   sleep 5
-  echo ">> Starting HDFS, Yarn and Spark ..."
+  echo ">> Starting Master and Workers ..."
   docker exec -d master-node /home/big_data/spark-cmd.sh start master-node
   docker exec -d worker-1 /home/big_data/spark-cmd.sh start
   docker exec -d worker-2 /home/big_data/spark-cmd.sh start
@@ -18,6 +18,7 @@ function show_info {
   masterIp=`docker inspect -f "{{ .NetworkSettings.Networks.cluster_net.IPAddress }}" master-node`
   echo "Hadoop info @ master-node: http://$masterIp:8088/cluster"
   echo "Spark info @ master-node:  http://$masterIp:8080/"
+  echo "Spark application logs @ master-node:  http://$masterIp:18080/"
   echo "DFS Health @ master-node:  http://$masterIp:9870/dfshealth.html"
 }
 
@@ -55,6 +56,7 @@ if [[ $1 = "deploy" ]]; then
   # Format master
   echo ">> Formatting hdfs ..."
   docker exec -it master-node /usr/local/hadoop/bin/hdfs namenode -format
+
   startServices
   exit
 fi

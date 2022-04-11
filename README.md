@@ -31,7 +31,7 @@ This repository is inspired by and uses several scripts taken from [Rubenafo's r
 
 - ✅ Ready to deploy in a Docker Swarm cluster: all the networking and port configuration issues have been fixed so you can scale your cluster to as many worker nodes as you need.
 - ⚡️ Hadoop, HDFS, Spark, Scala and PySpark ready to use: all the tools are available inside the container globally so you don't have to fight with environment variables and executable paths.
-- 🌟 New technology: our image offers Hadoop 3.2.2, Spark 3.1.1 and Python 3.8.5!
+- 🌟 New technology: our image offers Hadoop 3.3.2, Spark 3.1.2 and Python 3.8.5!
 - ⚙️ Less configuration: we have removed some settings to keep the minimum possible configuration, this way you prevent errors, unexpected behaviors and get the freedom to set parameters via environment variables and have an agile development that does not require rebuilding the Docker image. 
 - 🐍 Python dependencies: we include the most used Python dependencies like Pandas, Numpy and Scipy to be able to work on datasets and perform mathematical operations (you can remove them if you don't need them!)
 
@@ -63,6 +63,12 @@ Use `./toy-cluster.sh info` to see the URLs to check Hadoop and Spark clusters s
 
 The `docker-compose.yml` file has the same structure than `toy-cluster.sh` script except for the use of volumes to preserve HDFS data.
 
+Only for the first time, you need to format the namenode information directory. **Do not execute this command when you are in production with valid data stored as you will lose all your data stored in the HDFS**:
+
+`docker container run -v hdfs_master_data_swarm:/home/hadoop/data/nameNode jwaresolutions/big-data-cluster:<tag> /usr/local/hadoop/bin/hadoop namenode -format`
+
+Then you can manage your toy cluster with the following commands:
+
 - To start the cluster run: `docker-compose up -d`
 - To stop the cluster run: `docker-compose down`
 
@@ -87,16 +93,16 @@ Create needed network and volumes:
 
 ```
 docker network create -d overlay cluster_net_swarm
-docker volume create --name=hdsf_master_data_swarm
-docker volume create --name=hdsf_master_checkpoint_data_swarm
-docker volume create --name=hdsf_worker_data_swarm
+docker volume create --name=hdfs_master_data_swarm
+docker volume create --name=hdfs_master_checkpoint_data_swarm
+docker volume create --name=hdfs_worker_data_swarm
 ```
 
 Now it is time to select a tag of the Docker image. The default is latest but it is not recommended to use it in production. After choose one, set it version on `docker-compose_cluster.yml` and the command below.
 
 Only for the first time, you need to format the namenode information directory. **Do not execute this command when you are in production with valid data stored as you will lose all your data stored in the HDFS**:
 
-`docker container run -v hdsf_master_data_swarm:/home/hadoop/data/nameNode jwaresolutions/big-data-cluster:<tag> /usr/local/hadoop/bin/hadoop namenode -format`
+`docker container run -v hdfs_master_data_swarm:/home/hadoop/data/nameNode jwaresolutions/big-data-cluster:<tag> /usr/local/hadoop/bin/hadoop namenode -format`
 
 Now you are ready to deploy your production cluster!
 

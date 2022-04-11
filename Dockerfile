@@ -21,28 +21,28 @@ RUN apt update \
     && service ssh restart
 
 # Downloads and extracts Hadoop
-RUN wget http://apache.dattatec.com/hadoop/common/hadoop-3.2.2/hadoop-3.2.2.tar.gz
+RUN wget https://dlcdn.apache.org/hadoop/common/hadoop-3.3.2/hadoop-3.3.2.tar.gz
 
     # Configures Hadoop and removes downloaded .tar.gz file
-RUN tar -xzvf hadoop-3.2.2.tar.gz \
-    && mv hadoop-3.2.2 $HADOOP_HOME \
+RUN tar -xzvf hadoop-3.3.2.tar.gz \
+    && mv hadoop-3.3.2 $HADOOP_HOME \
     && echo 'export JAVA_HOME=$(readlink -f /usr/bin/java | sed "s:bin/java::")' >> $HADOOP_HOME/etc/hadoop/hadoop-env.sh \
     && echo 'export PATH=$PATH:$HADOOP_HOME/bin' >> ~/.bashrc \
     && echo 'export PATH=$PATH:$HADOOP_HOME/sbin' >> ~/.bashrc \
-    && rm hadoop-3.2.2.tar.gz
+    && rm hadoop-3.3.2.tar.gz
 
 # Downloads Apache Spark
-RUN wget http://apache.dattatec.com/spark/spark-3.1.1/spark-3.1.1-bin-without-hadoop.tgz
+RUN wget https://dlcdn.apache.org/spark/spark-3.1.2/spark-3.1.2-bin-without-hadoop.tgz
 
 # Decompress, adds to PATH and then removes .tgz Apache Spark file
 # NOTE: Spark bin folder goes first to prevent issues with /usr/local/bin duplicated binaries
-RUN tar -xvzf spark-3.1.1-bin-without-hadoop.tgz \
-    && mv spark-3.1.1-bin-without-hadoop sbin/ \
-    && echo 'export PATH=$PATH:/sbin/spark-3.1.1-bin-without-hadoop/sbin/' >> ~/.bashrc \
-    && echo 'export PATH=/sbin/spark-3.1.1-bin-without-hadoop/bin/:$PATH' >> ~/.bashrc \
-    && rm spark-3.1.1-bin-without-hadoop.tgz
+RUN tar -xvzf spark-3.1.2-bin-without-hadoop.tgz \
+    && mv spark-3.1.2-bin-without-hadoop sbin/ \
+    && echo 'export PATH=$PATH:/sbin/spark-3.1.2-bin-without-hadoop/sbin/' >> ~/.bashrc \
+    && echo 'export PATH=/sbin/spark-3.1.2-bin-without-hadoop/bin/:$PATH' >> ~/.bashrc \
+    && rm spark-3.1.2-bin-without-hadoop.tgz
 
-RUN mv ${HADOOP_STREAMING_HOME}/hadoop-streaming-3.2.2.jar ${HADOOP_STREAMING_HOME}/hadoop-streaming.jar \
+RUN mv ${HADOOP_STREAMING_HOME}/hadoop-streaming-3.3.2.jar ${HADOOP_STREAMING_HOME}/hadoop-streaming.jar \
     && source ~/.bashrc
 
 # Installs some extra libraries
@@ -51,9 +51,10 @@ RUN add-apt-repository universe
 
 WORKDIR /home/big_data
 
-# Installs common Python3
-COPY ./config/requirements.txt ./requirements.txt
+# Installs common Python3 libs
+RUN apt-get update
 RUN apt-get install -y python3-pip
+COPY ./config/requirements.txt ./requirements.txt
 RUN pip3 install -r ./requirements.txt
 
 # Adds some needed environment variables
@@ -72,8 +73,9 @@ COPY ./config/mapred-site.xml .
 COPY ./config/yarn-site.xml .
 
 # Spark settings
-WORKDIR /sbin/spark-3.1.1-bin-without-hadoop/conf/
+WORKDIR /sbin/spark-3.1.2-bin-without-hadoop/conf/
 COPY ./config/spark-env.sh .
+COPY ./config/spark-defaults.conf .
 COPY ./config/log4j.properties .
 
 # Cluster cmd
