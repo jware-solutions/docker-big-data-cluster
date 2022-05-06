@@ -2,7 +2,7 @@ version: "3.6"
 services:
   # Master
   master-node:
-    image: "jwaresolutions/big-data-cluster:0.4"
+    image: "jwaresolutions/big-data-cluster:0.4.1"
     container_name: "master-node"
     restart: "always"
     command: bash -c "/home/big_data/spark-cmd.sh start master-node"
@@ -20,7 +20,7 @@ services:
 
   # Workers
   worker:
-    image: "jwaresolutions/big-data-cluster:0.4"
+    image: "jwaresolutions/big-data-cluster:0.4.1"
     restart: "always"
     command: bash -c "/home/big_data/spark-cmd.sh start"
     deploy:

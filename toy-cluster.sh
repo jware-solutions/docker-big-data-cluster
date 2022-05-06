@@ -1,6 +1,6 @@
 #!/bin/bash
 
-imageName="jwaresolutions/big-data-cluster:0.4"
+imageName="jwaresolutions/big-data-cluster:0.4.1"
 
 # Bring the services up
 function startServices {

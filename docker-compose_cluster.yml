@@ -2,7 +2,7 @@ version: "3.6"
 services:
   # Master
   master-node:
-    image: "jwaresolutions/big-data-cluster:0.4"
+    image: "jwaresolutions/big-data-cluster:0.4.1"
     command: bash -c "/home/big_data/spark-cmd.sh start master-node"
     ports:
       - target: 8088
@@ -37,7 +37,7 @@ services:
 
   # Workers
   worker:
-    image: "jwaresolutions/big-data-cluster:0.4"
+    image: "jwaresolutions/big-data-cluster:0.4.1"
     command: bash -c "/home/big_data/spark-cmd.sh start"
     depends_on:
       - "master-node"
