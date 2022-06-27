@@ -1,11 +1,11 @@
 numpy~=1.18.2
 pandas~=1.0.3
 matplotlib~=3.2.1
-scikit-learn~=0.23.1
+scikit-learn==1.1.1
 scipy~=1.4.1
 typing-extensions==3.7.4.2
 pyspark~=3.0.0
 pyspark-stubs~=3.0.0
 pyarrow~=1.0.1
-scikit-survival==0.16.0
+scikit-survival==0.17.2
 filelock==3.6.0
