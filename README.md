@@ -197,6 +197,14 @@ In both `docker-compose.yml` (toy cluster) and `docker-compose_cluster.yml` (rea
 1. Build the image again.
 
 
+### Check Spark logs
+
+To check Spark `stderr` and `stdout` files you can run `bash` inside the Worker container and then run the following commands:
+
+- stderr: `cat /sbin/spark-3.1.2-bin-without-hadoop/work/<app id>/<partition id>/stderr`
+- stdout: `cat /sbin/spark-3.1.2-bin-without-hadoop/work/<app id>/<partition id>/stdout`
+
+
 ## Frequent problems
 
 
