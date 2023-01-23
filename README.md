@@ -31,7 +31,7 @@ This repository is inspired by and uses several scripts taken from [Rubenafo's r
 
 - ✅ Ready to deploy in a Docker Swarm cluster: all the networking and port configuration issues have been fixed so you can scale your cluster to as many worker nodes as you need.
 - ⚡️ Hadoop, HDFS, Spark, Scala and PySpark ready to use: all the tools are available inside the container globally so you don't have to fight with environment variables and executable paths.
-- 🌟 New technology: our image offers Hadoop 3.3.2, Spark 3.1.2 and Python 3.8.5!
+- 🌟 New technology: our image offers Hadoop 3.3.2, Spark 3.1.3 and Python 3.8.5!
 - ⚙️ Less configuration: we have removed some settings to keep the minimum possible configuration, this way you prevent errors, unexpected behaviors and get the freedom to set parameters via environment variables and have an agile development that does not require rebuilding the Docker image. 
 - 🐍 Python dependencies: we include the most used Python dependencies like Pandas, Numpy and Scipy to be able to work on datasets and perform mathematical operations (you can remove them if you don't need them!)
 
@@ -201,8 +201,8 @@ In both `docker-compose.yml` (toy cluster) and `docker-compose_cluster.yml` (rea
 
 To check Spark `stderr` and `stdout` files you can run `bash` inside the Worker container and then run the following commands:
 
-- stderr: `cat /sbin/spark-3.1.2-bin-without-hadoop/work/<app id>/<partition id>/stderr`
-- stdout: `cat /sbin/spark-3.1.2-bin-without-hadoop/work/<app id>/<partition id>/stdout`
+- stderr: `cat /sbin/spark-3.1.3-bin-without-hadoop/work/<app id>/<partition id>/stderr`
+- stdout: `cat /sbin/spark-3.1.3-bin-without-hadoop/work/<app id>/<partition id>/stdout`
 
 
 ## Frequent problems
