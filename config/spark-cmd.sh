@@ -1,6 +1,8 @@
 #!/bin/bash
 service ssh start
 
+# NOTE: SPARK_VERSION and HADOOP_HOME are defined in Dockerfile
+
 echo "Starting HDFS and Yarn"
 $HADOOP_HOME/sbin/start-dfs.sh
 sleep 5
@@ -9,14 +11,14 @@ sleep 5
 
 if [[ $1 = "start" ]]; then
     if [[ $2 = "master-node" ]]; then
-        /sbin/spark-3.1.3-bin-without-hadoop/sbin/start-master.sh
+        /opt/spark-${SPARK_VERSION}-bin-hadoop3/sbin/start-master.sh
 
         # Starts history server to check running and completed applications
-        /usr/local/hadoop/bin/hdfs dfs -mkdir -p /spark-logs
-        /sbin/spark-3.1.3-bin-without-hadoop/sbin/start-history-server.sh
+        ${HADOOP_HOME}/bin/hdfs dfs -mkdir -p /spark-logs
+        /opt/spark-${SPARK_VERSION}-bin-hadoop3/sbin/start-history-server.sh
 
         # Disables safe mode to prevent errors in small clusters
-        /usr/local/hadoop/bin/hdfs dfsadmin -safemode leave
+        # ${HADOOP_HOME}/bin/hdfs dfsadmin -safemode leave
 
         sleep infinity
         exit
@@ -24,15 +26,15 @@ if [[ $1 = "start" ]]; then
     
     # Sleeps to prevent connection issues with master
     sleep 5
-    /sbin/spark-3.1.3-bin-without-hadoop/sbin/start-worker.sh master-node:7077
+    /opt/spark-${SPARK_VERSION}-bin-hadoop3/sbin/start-worker.sh master-node:7077
     sleep infinity
     exit
 fi
 
 if [[ $1 = "stop" ]]; then
     if [[ $2 = "master-node" ]]; then
-        /sbin/spark-3.1.3-bin-without-hadoop/sbin/stop-master.sh
+        /opt/spark-${SPARK_VERSION}-bin-hadoop3/sbin/stop-master.sh
         exit
     fi
-    /sbin/spark-3.1.3-bin-without-hadoop/sbin/stop-worker.sh
+    /opt/spark-${SPARK_VERSION}-bin-hadoop3/sbin/stop-worker.sh
 fi

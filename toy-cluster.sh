@@ -55,7 +55,7 @@ if [[ $1 = "deploy" ]]; then
 
   # Format master
   echo ">> Formatting hdfs ..."
-  docker exec -it master-node /usr/local/hadoop/bin/hdfs namenode -format
+  docker exec -it master-node ${HADOOP_HOME}/bin/hdfs namenode -format
 
   startServices
   exit

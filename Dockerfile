@@ -1,80 +1,94 @@
+# Base image
 FROM ubuntu:24.10
 
-# Defines the environment variables required by Hadoop
-ENV HADOOP_HOME "/usr/local/hadoop"
-ENV HADOOP_STREAMING_HOME "$HADOOP_HOME/share/hadoop/tools/lib"
+# Set environment variables for non-interactive installation
+ENV DEBIAN_FRONTEND=noninteractive
 
-# This line is required, otherwise the source command cannot be used.
-SHELL ["/bin/bash", "-c"]
+# Install required packages
+ENV OPEN_JDK_VERSION=21
+# TODO: change all apt-get to apt
+RUN apt-get update && apt-get install -y \
+    openjdk-${OPEN_JDK_VERSION}-jdk \
+    wget \
+    curl \
+    vim \
+    ssh \
+    rsync \
+    git \
+    net-tools \
+    && rm -rf /var/lib/apt/lists/*
 
-# Installation and configuration
-RUN apt update \
-    # Installs Python 3.x, Java (OpenJDK), and some other tools to make everything work.
-    # Configures SSH so that it doesn't throw problems with the connection
-    && apt install -y python3 python3-venv openjdk-21-jdk wget ssh openssh-server openssh-client net-tools nano iputils-ping \
-    && echo 'ssh:ALL:allow' >> /etc/hosts.allow \
-    && echo 'sshd:ALL:allow' >> /etc/hosts.allow \
-    && ssh-keygen -q -t rsa -N '' -f ~/.ssh/id_rsa \
-    && cat ~/.ssh/id_rsa.pub > ~/.ssh/authorized_keys \
-    && echo 'PermitRootLogin yes' >> /etc/ssh/sshd_config \
-    && service ssh restart
+# Set JAVA_HOME environment variable
+ENV JAVA_HOME=/usr/lib/jvm/java-${OPEN_JDK_VERSION}-openjdk-amd64
+ENV PATH=$JAVA_HOME/bin:$PATH
 
-# Downloads and extracts Hadoop
-RUN wget https://dlcdn.apache.org/hadoop/common/hadoop-3.4.0/hadoop-3.4.0.tar.gz
+# Install Hadoop
+ENV HADOOP_VERSION=3.4.0
+RUN wget https://downloads.apache.org/hadoop/common/hadoop-${HADOOP_VERSION}/hadoop-${HADOOP_VERSION}.tar.gz \
+    && tar -xzf hadoop-${HADOOP_VERSION}.tar.gz -C /opt/ \
+    && rm hadoop-${HADOOP_VERSION}.tar.gz
+ENV HADOOP_HOME=/opt/hadoop-${HADOOP_VERSION}
+ENV PATH=$HADOOP_HOME/bin:$HADOOP_HOME/sbin:$PATH
 
-    # Configures Hadoop and removes downloaded .tar.gz file
-RUN tar -xzvf hadoop-3.4.0.tar.gz \
-    && mv hadoop-3.4.0 $HADOOP_HOME \
-    && echo 'export JAVA_HOME=$(readlink -f /usr/bin/java | sed "s:bin/java::")' >> $HADOOP_HOME/etc/hadoop/hadoop-env.sh \
-    && echo 'export PATH=$PATH:$HADOOP_HOME/bin' >> ~/.bashrc \
-    && echo 'export PATH=$PATH:$HADOOP_HOME/sbin' >> ~/.bashrc \
-    && rm hadoop-3.4.0.tar.gz
+# Configure Hadoop (basic configuration, can be customized as needed)
+RUN mkdir -p /opt/hadoop-${HADOOP_VERSION}/logs
 
-# Downloads Apache Spark
-RUN wget https://dlcdn.apache.org/spark/spark-3.5.2/spark-3.5.2-bin-without-hadoop.tgz
+# Install Spark
+ENV SPARK_VERSION=3.5.2
+RUN wget https://dlcdn.apache.org/spark/spark-${SPARK_VERSION}/spark-${SPARK_VERSION}-bin-hadoop3.tgz \
+    && tar -xzf spark-${SPARK_VERSION}-bin-hadoop3.tgz -C /opt/ \
+    && rm spark-${SPARK_VERSION}-bin-hadoop3.tgz
+ENV SPARK_HOME=/opt/spark-${SPARK_VERSION}-bin-hadoop3
+ENV PATH=$SPARK_HOME/bin:$SPARK_HOME/sbin:$PATH
 
-# Decompress, adds to PATH and then removes .tgz Apache Spark file
-# NOTE: Spark bin folder goes first to prevent issues with /usr/local/bin duplicated binaries
-RUN tar -xvzf spark-3.5.2-bin-without-hadoop.tgz \
-    && mv spark-3.5.2-bin-without-hadoop sbin/ \
-    && echo 'export PATH=$PATH:/sbin/spark-3.5.2-bin-without-hadoop/sbin/' >> ~/.bashrc \
-    && echo 'export PATH=/sbin/spark-3.5.2-bin-without-hadoop/bin/:$PATH' >> ~/.bashrc \
-    && rm spark-3.5.2-bin-without-hadoop.tgz
+# Set up SSH (for Hadoop to communicate across nodes)
+RUN ssh-keygen -t rsa -f ~/.ssh/id_rsa -P '' \
+    && cat ~/.ssh/id_rsa.pub >> ~/.ssh/authorized_keys \
+    && chmod 0600 ~/.ssh/authorized_keys
 
-RUN mv ${HADOOP_STREAMING_HOME}/hadoop-streaming-3.4.0.jar ${HADOOP_STREAMING_HOME}/hadoop-streaming.jar \
-    && source ~/.bashrc
+# Expose necessary ports (e.g., Hadoop Namenode, Datanode, Spark UI)
+EXPOSE 8080 8081 4040 7077 8088 50070 9000
 
-# Installs some extra libraries
-RUN apt-get update --fix-missing && apt-get install -y netcat-traditional software-properties-common build-essential cmake
-RUN add-apt-repository universe
 
-WORKDIR /home/big_data
+# Create and activate a virtual environment for Python. TODO: move to the apt install section above
+RUN apt update && apt install -y python3-pip python3-venv
+RUN python3 -m venv /opt/venv
+ENV VIRTUAL_ENV=/opt/venv
+ENV PATH="$VIRTUAL_ENV/bin:$PATH"
 
-# Installs common Python3 libs
-RUN apt-get update
-RUN apt-get install -y python3-pip
-COPY ./config/requirements.txt ./requirements.txt
-RUN python3 -m venv /home/big_data/venv
-RUN /home/big_data/venv/bin/pip install -r ./requirements.txt
-RUN source /home/big_data/venv/bin/activate
+# Copy requirements.txt and install Python dependencies in the virtual environment
+COPY ./config/requirements.txt /tmp/
+RUN pip install --upgrade pip \
+    && pip install -r /tmp/requirements.txt
+
+# RUN apt update && apt install -y python3-pip python3-venv
+# COPY ./config/requirements.txt /tmp/
+# RUN python3 -m pip install --upgrade pip \
+#     && python3 -m pip install -r /tmp/requirements.txt
+# RUN apt update && apt install -y python3-pip python3-venv
+# COPY ./config/requirements.txt ./requirements.txt
+# RUN python3 -m venv /home/big_data/venv
+# RUN /home/big_data/venv/bin/pip install -r ./requirements.txt
+# RUN pip3 install -r ./requirements.txt
+# RUN source /home/big_data/venv/bin/activate
 
 # Adds some needed environment variables
-ENV HDFS_NAMENODE_USER "root"
-ENV HDFS_DATANODE_USER "root"
-ENV HDFS_SECONDARYNAMENODE_USER "root"
-ENV YARN_RESOURCEMANAGER_USER "root"
-ENV YARN_NODEMANAGER_USER "root"
-ENV PYSPARK_PYTHON "python3"
+ENV HDFS_NAMENODE_USER=root
+ENV HDFS_DATANODE_USER=root
+ENV HDFS_SECONDARYNAMENODE_USER=root
+ENV YARN_RESOURCEMANAGER_USER=root
+ENV YARN_NODEMANAGER_USER=root
+ENV PYSPARK_PYTHON=python3
 
 # Hadoop settings
-WORKDIR /usr/local/hadoop/etc/hadoop
+WORKDIR ${HADOOP_HOME}/etc/hadoop
 COPY ./config/core-site.xml .
 COPY ./config/hdfs-site.xml .
 COPY ./config/mapred-site.xml .
 COPY ./config/yarn-site.xml .
 
 # Spark settings
-WORKDIR /sbin/spark-3.5.2-bin-without-hadoop/conf/
+WORKDIR ${SPARK_HOME}/conf
 COPY ./config/spark-env.sh .
 COPY ./config/spark-defaults.conf .
 COPY ./config/log4j.properties .
@@ -84,4 +98,15 @@ WORKDIR /home/big_data
 COPY ./config/spark-cmd.sh .
 RUN chmod +x /home/big_data/spark-cmd.sh
 
-CMD service ssh start && sleep infinity
+# Sudo is needed as it's called in some Spark scripts
+RUN apt -y install sudo
+
+# Add an explicit step to set JAVA_HOME in the bash profile. TODO: move after definition of JAVA_HOME
+RUN echo "export JAVA_HOME=$JAVA_HOME" >> /etc/profile \
+    && echo "export JAVA_HOME=$JAVA_HOME" >> $HADOOP_HOME/etc/hadoop/hadoop-env.sh \
+    && echo "export PATH=$JAVA_HOME/bin:$PATH" >> /etc/profile \
+    && echo 'export PATH=$PATH:$HADOOP_HOME/bin' >> ~/.bashrc \
+    && echo 'export PATH=$PATH:$HADOOP_HOME/sbin' >> ~/.bashrc
+
+# Start SSH service. The entrypoint is defined in the docker-compose file
+CMD ["service", "ssh", "start", "&&", "sleep", "infinity"]

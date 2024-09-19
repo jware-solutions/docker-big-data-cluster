@@ -1,4 +1,3 @@
-version: "3.6"
 services:
   # Master
   master-node:
@@ -39,6 +38,7 @@ volumes:
 # Create the cluster-net network
 networks:
   cluster-net:
+    external: true
     name: "cluster_net" # Useful for format as it does not allow '-' char on command
     driver: bridge
     attachable: false # Attachable: true prevents user to connect to Hadoop panels
