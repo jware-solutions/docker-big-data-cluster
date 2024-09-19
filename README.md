@@ -114,7 +114,6 @@ Now you are ready to deploy your production cluster!
 
 Finally you can use your cluster! Like the toy cluster, you have available some useful URLs:
 
-- \<MASTER IP>:8088 -> Hadoop panel
 - \<MASTER IP>:8080 -> Spark panel
 - \<MASTER IP>:18080 -> Spark applications logs
 - \<MASTER IP>:9870 -> HDFS panel

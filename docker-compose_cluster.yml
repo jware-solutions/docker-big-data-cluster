@@ -4,10 +4,6 @@ services:
     image: "jwaresolutions/big-data-cluster:0.5.0"
     command: bash -c "/home/big_data/spark-cmd.sh start master-node"
     ports:
-      - target: 8088
-        published: 8088
-        protocol: tcp
-        mode: host
       - target: 8080
         published: 8080
         protocol: tcp

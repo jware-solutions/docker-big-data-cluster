@@ -4,10 +4,17 @@ FROM ubuntu:24.10
 # Set environment variables for non-interactive installation
 ENV DEBIAN_FRONTEND=noninteractive
 
-# Install required packages
+# Adds some needed environment variables
+ENV HDFS_NAMENODE_USER=root
+ENV HDFS_DATANODE_USER=root
+ENV HDFS_SECONDARYNAMENODE_USER=root
+ENV YARN_RESOURCEMANAGER_USER=root
+ENV YARN_NODEMANAGER_USER=root
+ENV PYSPARK_PYTHON=python3
+
+# Install required packages. NOTE: sudo is needed as it's called in some Spark scripts
 ENV OPEN_JDK_VERSION=21
-# TODO: change all apt-get to apt
-RUN apt-get update && apt-get install -y \
+RUN apt update && apt install -y \
     openjdk-${OPEN_JDK_VERSION}-jdk \
     wget \
     curl \
@@ -16,6 +23,9 @@ RUN apt-get update && apt-get install -y \
     rsync \
     git \
     net-tools \
+    python3-pip \
+    python3-venv \
+    sudo \ 
     && rm -rf /var/lib/apt/lists/*
 
 # Set JAVA_HOME environment variable
@@ -30,8 +40,8 @@ RUN wget https://downloads.apache.org/hadoop/common/hadoop-${HADOOP_VERSION}/had
 ENV HADOOP_HOME=/opt/hadoop-${HADOOP_VERSION}
 ENV PATH=$HADOOP_HOME/bin:$HADOOP_HOME/sbin:$PATH
 
-# Configure Hadoop (basic configuration, can be customized as needed)
-RUN mkdir -p /opt/hadoop-${HADOOP_VERSION}/logs
+# Creates the necessary directories for Hadoop
+RUN mkdir -p ${HADOOP_VERSION}/logs
 
 # Install Spark
 ENV SPARK_VERSION=3.5.2
@@ -46,39 +56,15 @@ RUN ssh-keygen -t rsa -f ~/.ssh/id_rsa -P '' \
     && cat ~/.ssh/id_rsa.pub >> ~/.ssh/authorized_keys \
     && chmod 0600 ~/.ssh/authorized_keys
 
-# Expose necessary ports (e.g., Hadoop Namenode, Datanode, Spark UI)
-EXPOSE 8080 8081 4040 7077 8088 50070 9000
-
-
-# Create and activate a virtual environment for Python. TODO: move to the apt install section above
-RUN apt update && apt install -y python3-pip python3-venv
-RUN python3 -m venv /opt/venv
+# Create and activate a virtual environment for Python.
 ENV VIRTUAL_ENV=/opt/venv
+RUN python3 -m venv $VIRTUAL_ENV
 ENV PATH="$VIRTUAL_ENV/bin:$PATH"
 
 # Copy requirements.txt and install Python dependencies in the virtual environment
 COPY ./config/requirements.txt /tmp/
 RUN pip install --upgrade pip \
     && pip install -r /tmp/requirements.txt
-
-# RUN apt update && apt install -y python3-pip python3-venv
-# COPY ./config/requirements.txt /tmp/
-# RUN python3 -m pip install --upgrade pip \
-#     && python3 -m pip install -r /tmp/requirements.txt
-# RUN apt update && apt install -y python3-pip python3-venv
-# COPY ./config/requirements.txt ./requirements.txt
-# RUN python3 -m venv /home/big_data/venv
-# RUN /home/big_data/venv/bin/pip install -r ./requirements.txt
-# RUN pip3 install -r ./requirements.txt
-# RUN source /home/big_data/venv/bin/activate
-
-# Adds some needed environment variables
-ENV HDFS_NAMENODE_USER=root
-ENV HDFS_DATANODE_USER=root
-ENV HDFS_SECONDARYNAMENODE_USER=root
-ENV YARN_RESOURCEMANAGER_USER=root
-ENV YARN_NODEMANAGER_USER=root
-ENV PYSPARK_PYTHON=python3
 
 # Hadoop settings
 WORKDIR ${HADOOP_HOME}/etc/hadoop
@@ -98,15 +84,15 @@ WORKDIR /home/big_data
 COPY ./config/spark-cmd.sh .
 RUN chmod +x /home/big_data/spark-cmd.sh
 
-# Sudo is needed as it's called in some Spark scripts
-RUN apt -y install sudo
-
-# Add an explicit step to set JAVA_HOME in the bash profile. TODO: move after definition of JAVA_HOME
+# Add an explicit step to set JAVA_HOME in the bash profile to make it available to all users
 RUN echo "export JAVA_HOME=$JAVA_HOME" >> /etc/profile \
     && echo "export JAVA_HOME=$JAVA_HOME" >> $HADOOP_HOME/etc/hadoop/hadoop-env.sh \
     && echo "export PATH=$JAVA_HOME/bin:$PATH" >> /etc/profile \
     && echo 'export PATH=$PATH:$HADOOP_HOME/bin' >> ~/.bashrc \
     && echo 'export PATH=$PATH:$HADOOP_HOME/sbin' >> ~/.bashrc
+
+# Expose necessary ports (8080 -> Spark UI, 18080 -> Spark applications logs, 9870 -> Hadoop NameNode UI)
+EXPOSE 8080 18080 9870
 
 # Start SSH service. The entrypoint is defined in the docker-compose file
 CMD ["service", "ssh", "start", "&&", "sleep", "infinity"]
