@@ -44,7 +44,7 @@ ENV PATH=$HADOOP_HOME/bin:$HADOOP_HOME/sbin:$PATH
 RUN mkdir -p ${HADOOP_VERSION}/logs
 
 # Install Spark
-ENV SPARK_VERSION=3.5.2
+ENV SPARK_VERSION=3.5.4
 RUN wget https://dlcdn.apache.org/spark/spark-${SPARK_VERSION}/spark-${SPARK_VERSION}-bin-hadoop3.tgz \
     && tar -xzf spark-${SPARK_VERSION}-bin-hadoop3.tgz -C /opt/ \
     && rm spark-${SPARK_VERSION}-bin-hadoop3.tgz
