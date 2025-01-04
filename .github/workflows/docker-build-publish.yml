@@ -1,4 +1,4 @@
-name: Build, Publish Docker Image, and Create Release
+name: Build, Publish Docker Image, and Tag Release
 
 on:
   push:
@@ -36,21 +36,9 @@ jobs:
         docker image push jwaresolutions/big-data-cluster:$version
         docker image push jwaresolutions/big-data-cluster:latest
 
-    - name: Create Git tag and push
-      id: create_tag
-      run: |
-        git tag -a "v$version" -m "Release v$version"
-        git push origin "v$version"
-
-    - name: Create GitHub Release
-      uses: actions/create-release@v1
+    - name: Create Tag and Release
+      uses: avakar/tag-and-release@v1
       with:
         tag_name: "v${{ env.version }}"
-        release_name: "Release v${{ env.version }}"
-        body: |
-          This release corresponds to Docker image v${{ env.version }}.
-          The image has been published to Docker Hub.
-        draft: false
-        prerelease: false
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
