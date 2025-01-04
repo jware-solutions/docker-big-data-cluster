@@ -28,10 +28,10 @@ jobs:
 
     - name: Build and tag Docker image
       run: |
-        docker image build -t ${{ secrets.DOCKER_USERNAME }}/big-data-cluster:$version .
-        docker tag ${{ secrets.DOCKER_USERNAME }}/big-data-cluster:$version ${{ secrets.DOCKER_USERNAME }}/big-data-cluster:latest
+        docker image build -t jwaresolutions/big-data-cluster:$version .
+        docker tag jwaresolutions/big-data-cluster:$version jwaresolutions/big-data-cluster:latest
 
     - name: Push Docker image
       run: |
-        docker image push ${{ secrets.DOCKER_USERNAME }}/big-data-cluster:$version
-        docker image push ${{ secrets.DOCKER_USERNAME }}/big-data-cluster:latest
+        docker image push jwaresolutions/big-data-cluster:$version
+        docker image push jwaresolutions/big-data-cluster:latest
