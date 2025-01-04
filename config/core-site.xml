@@ -6,9 +6,5 @@
             <name>fs.defaultFS</name>
             <value>hdfs://master-node:9000</value>
         </property>
-        <property>
-            <name>fs.default.name</name>
-            <value>hdfs://master-node:9000</value>
-        </property>
     </configuration>
 </configuration>
