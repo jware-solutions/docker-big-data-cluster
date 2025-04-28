@@ -102,7 +102,7 @@ Now it is time to select a tag of the Docker image. The default is latest but it
 
 Only for the first time, you need to format the namenode information directory **in Master and Workers nodes. Do not execute this command when you are in production with valid data stored as you will lose all your data stored in the HDFS**:
 
-`docker container run --rm -v hdfs_master_data_swarm:/home/hadoop/data/nameNode jwaresolutions/big-data-cluster:<tag> /usr/local/hadoop/bin/hadoop namenode -format`
+`docker container run --rm -v hdfs_master_data_swarm:/home/hadoop/data/nameNode jwaresolutions/big-data-cluster:<tag> /opt/hadoop-3.4.0/bin/hadoop namenode -format`
 
 Now you are ready to deploy your production cluster!
 
